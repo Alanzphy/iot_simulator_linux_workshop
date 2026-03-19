@@ -76,8 +76,8 @@ const server = http.createServer((req, res) => {
     }
 });
 
-const PORT = 3000;
+const PORT = 5111;
 server.listen(PORT, () => {
     console.log(`Servidor IoT emitiendo datos en el puerto ${PORT}`);
-    console.log(`Para probar el flujo, abre otra terminal y ejecuta: curl -sN http://localhost:${PORT}/stream`);
+    console.log(`Para probar el flujo, http://localhost:${PORT}/stream`);
 });
