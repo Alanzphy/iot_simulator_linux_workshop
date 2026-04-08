@@ -22,7 +22,7 @@ const server = http.createServer((req, res) => {
             // Generar timestamp con formato YYYY-MM-DD HH:mm:ss
             const now = new Date();
             const timestamp = now.toISOString().replace('T', ' ').substring(0, 19);
-            
+
             const zonas = ['ZONA_NORTE', 'ZONA_SUR', 'ZONA_ESTE', 'ZONA_OESTE'];
             const zona = zonas[Math.floor(Math.random() * zonas.length)];
 
@@ -34,18 +34,28 @@ const server = http.createServer((req, res) => {
                 hum = Math.floor(Math.random() * (10 - 0 + 1)) + 0;   // 0% a 10%
                 estado = 'CRITICO';
             } else {
-                // MODO NORMAL: Datos estables de un cultivo
-                tmp = Math.floor(Math.random() * (30 - 18 + 1)) + 18; // 18°C a 30°C
-                // Mantenemos la humedad entre 35 y 80, pero de vez en cuando (5% de las veces) 
-                // hacemos que baje a 28 para que los scripts de los alumnos salten naturalmente.
+                // MODO NORMAL:
+                // 15% CRITICO, 25% ALERTA_TEMPORAL, 60% NORMAL.
                 const trampa = Math.random();
-                hum = trampa > 0.95 ? Math.floor(Math.random() * (29 - 25 + 1)) + 25 : Math.floor(Math.random() * (80 - 35 + 1)) + 35;
-                estado = hum < 30 ? 'ALERTA_TEMPORAL' : 'NORMAL';
+
+                if (trampa < 0.15) {
+                    tmp = Math.floor(Math.random() * (85 - 70 + 1)) + 70; // 70°C a 85°C
+                    hum = Math.floor(Math.random() * (15 - 5 + 1)) + 5;   // 5% a 15%
+                    estado = 'CRITICO';
+                } else if (trampa < 0.40) {
+                    tmp = Math.floor(Math.random() * (34 - 28 + 1)) + 28; // 28°C a 34°C
+                    hum = Math.floor(Math.random() * (29 - 25 + 1)) + 25; // 25% a 29%
+                    estado = 'ALERTA_TEMPORAL';
+                } else {
+                    tmp = Math.floor(Math.random() * (30 - 18 + 1)) + 18; // 18°C a 30°C
+                    hum = Math.floor(Math.random() * (80 - 35 + 1)) + 35; // 35% a 80%
+                    estado = 'NORMAL';
+                }
             }
 
             // Construimos la línea de texto final
             const dataLine = `${timestamp} | ${zona} | TMP: ${tmp}C | HUM: ${hum}% | ESTADO: ${estado}\n`;
-            
+
             // Enviamos la línea a la terminal del alumno
             res.write(dataLine);
 
